@@ -150,7 +150,7 @@ func cmdValidate(args []string) int {
 	var issues []ValidationIssue
 	issues = append(issues, cfg.Validate(f)...)
 	// mine # required from .env.example and check those too
-	if ex, err := LoadEnv(*flExample, *flExample); err == nil {
+	if _, err := LoadEnv(*flExample, *flExample); err == nil {
 		if content, err2 := os.ReadFile(*flExample); err2 == nil {
 			for key := range requiredFromComments(string(content)) {
 				if _, ok := cfg.Rules[key]; ok {
