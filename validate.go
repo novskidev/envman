@@ -135,16 +135,16 @@ func requiredFromComments(content string) map[string]bool {
 		if !marked {
 			continue
 		}
+		// inline comment (KEY=... # required): flag own key, no lookahead
+		if strings.Contains(trimmed, "=") {
+			if key := keyOfLine(trimmed); key != "" {
+				required[key] = true
+			}
+			continue
+		}
 		// comment before: KEY=... on next line
 		if i+1 < len(lines) {
 			key := keyOfLine(lines[i+1])
-			if key != "" {
-				required[key] = true
-			}
-		}
-		// comment after: KEY=... # required (inline)
-		if strings.Contains(trimmed, "=") {
-			key := keyOfLine(trimmed)
 			if key != "" {
 				required[key] = true
 			}
