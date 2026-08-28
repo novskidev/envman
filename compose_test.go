@@ -43,13 +43,22 @@ func TestComposeEnv(t *testing.T) {
 	if len(svcs[0].Environment) != 3 {
 		t.Fatalf("web: want 3 env entries, got %d: %v", len(svcs[0].Environment), svcs[0].Environment)
 	}
-	if keyOfEnvEntry(svcs[0].Environment[0]) != "DEBUG" {
-		t.Errorf("web env[0] key = %q, want DEBUG", svcs[0].Environment[0])
+	webKeys := make(map[string]bool, len(svcs[0].Environment))
+	for _, e := range svcs[0].Environment {
+		webKeys[keyOfEnvEntry(e)] = true
 	}
-	if keyOfEnvEntry(svcs[0].Environment[2]) != "HOST_TOKEN" {
-		t.Errorf("web passthrough key = %q, want HOST_TOKEN", svcs[0].Environment[2])
+	workerKeys := make(map[string]bool, len(svcs[1].Environment))
+	for _, e := range svcs[1].Environment {
+		workerKeys[keyOfEnvEntry(e)] = true
 	}
-	if keyOfEnvEntry(svcs[1].Environment[1]) != "QUEUE_NAME" {
-		t.Errorf("worker key = %q, want QUEUE_NAME", svcs[1].Environment[1])
+	for key, want := range map[string]bool{"DEBUG": true, "PORT": true, "HOST_TOKEN": true} {
+		if webKeys[key] != want {
+			t.Errorf("web key %q missing", key)
+		}
+	}
+	for key, want := range map[string]bool{"REDIS_URL": true, "QUEUE_NAME": true} {
+		if workerKeys[key] != want {
+			t.Errorf("worker key %q missing", key)
+		}
 	}
 }
