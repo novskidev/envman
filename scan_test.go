@@ -40,7 +40,7 @@ func TestScanSecrets(t *testing.T) {
 }
 
 func TestScanSecretsClean(t *testing.T) {
-	f := ParseEnv("# required\nAPI_URL=https://example.com\nPORT=8080\nLOG_LEVEL=info\nYOUR_API_KEY=your-api-key-here\nDUMMY_SECRET=xxx\n")
+	f := ParseEnv("# required\nAPI_URL=https://example.com\nPORT=8080\nLOG_LEVEL=info\nYOUR_API_KEY=your-api-key-here\nDUMMY_SECRET=xxx\nMAX_TOKENS_PER_REQUEST=500\nTOKEN_BUCKET_SIZE=100\n")
 	findings := ScanSecrets(f)
 	if len(findings) != 0 {
 		t.Errorf("clean example file flagged: %+v", findings)

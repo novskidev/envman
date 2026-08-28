@@ -22,13 +22,14 @@ var secretPatterns = []struct {
 }
 
 // keyLooksSecret: name-based heuristic (KEY/SECRET/TOKEN/PASSWORD +
-// not EXAMPLE/PLACEHOLDER/DUMMY/YOUR_/XXX).
+// not EXAMPLE/PLACEHOLDER/DUMMY/YOUR_/XXX). TOKEN must be a whole word
+// (so MAX_TOKENS_PER_REQUEST is not flagged as a secret).
 func keyLooksSecret(key string) bool {
 	up := strings.ToUpper(key)
 	marker := strings.Contains(up, "KEY") || strings.Contains(up, "SECRET") ||
-		strings.Contains(up, "TOKEN") || strings.Contains(up, "PASSWORD") ||
-		strings.Contains(up, "PASSWD") || strings.Contains(up, "PRIVATE_KEY") ||
-		strings.Contains(up, "ACCESS_KEY")
+		strings.Contains(up, "PASSWORD") || strings.Contains(up, "PASSWD") ||
+		strings.Contains(up, "PRIVATE_KEY") || strings.Contains(up, "ACCESS_KEY") ||
+		wholeWord(up, "TOKEN")
 	if !marker {
 		return false
 	}
@@ -38,6 +39,13 @@ func keyLooksSecret(key string) bool {
 		strings.Contains(up, "CHANGE_ME") || strings.Contains(up, "<") &&
 			strings.Contains(up, ">")
 	return marker && !placeholder
+}
+
+// wholeWord reports whether the string contains word as a standalone word
+// (surrounded by non-identifier characters).
+func wholeWord(s, word string) bool {
+	re := regexp.MustCompile(`(?i)(^|[^A-Z0-9_])` + word + `([^A-Z0-9_]|$)`)
+	return re.MatchString(s)
 }
 
 // SecretFinding is one suspected real secret in a file.
