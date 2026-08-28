@@ -1,0 +1,8 @@
+# env files
+.env
+.env.*
+!.env.example
+
+# build artifacts
+/envman
+/dist/
