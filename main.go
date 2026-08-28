@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-const version = "0.1.0"
+const version = "0.2.0"
 
 func main() {
 	os.Exit(run(os.Args[1:]))
@@ -24,6 +24,10 @@ func run(args []string) int {
 		return cmdCheck(args[1:])
 	case "compare":
 		return cmdCompare(args[1:])
+	case "scan":
+		return cmdScan(args[1:])
+	case "validate":
+		return cmdValidate(args[1:])
 	case "version", "--version", "-v":
 		fmt.Printf("envman %s\n", version)
 		return 0
@@ -110,6 +114,60 @@ func cmdCompare(args []string) int {
 	return 0
 }
 
+func cmdScan(args []string) int {
+	fs := flag.NewFlagSet("scan", flag.ExitOnError)
+	flFile := fs.String("file", ".env.example", "env file to scan")
+	fs.Parse(args)
+	f, err := LoadEnv(*flFile, *flFile)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "envman: %v\n", err)
+		return 2
+	}
+	findings := ScanSecrets(f)
+	renderScan(os.Stdout, f, findings)
+	if len(findings) > 0 {
+		return 1
+	}
+	return 0
+}
+
+func cmdValidate(args []string) int {
+	fs := flag.NewFlagSet("validate", flag.ExitOnError)
+	flEnv := fs.String("env", ".env", "env file to validate")
+	flConfig := fs.String("config", ".envman.yaml", "rules file")
+	flExample := fs.String("example", ".env.example", "reference file to mine # required comments")
+	fs.Parse(args)
+	cfg, err := LoadConfig(*flConfig)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "envman: %v\n", err)
+		return 2
+	}
+	f, err := LoadEnv(*flEnv, *flEnv)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "envman: %v\n", err)
+		return 2
+	}
+	var issues []ValidationIssue
+	issues = append(issues, cfg.Validate(f)...)
+	// mine # required from .env.example and check those too
+	if ex, err := LoadEnv(*flExample, *flExample); err == nil {
+		if content, err2 := os.ReadFile(*flExample); err2 == nil {
+			for key := range requiredFromComments(string(content)) {
+				if _, ok := cfg.Rules[key]; ok {
+					continue // already rule-defined
+				}
+				cfg.Rules[key] = Rule{Required: true}
+			}
+			issues = append(issues, cfg.Validate(f)...)
+		}
+	}
+	renderValidation(os.Stdout, issues)
+	if len(issues) > 0 {
+		return 1
+	}
+	return 0
+}
+
 func usage(w io.Writer) {
 	fmt.Fprintf(w, `envman %s - environment variable sync checker
 
@@ -121,6 +179,11 @@ Usage:
       Same check, but the actual env is fetched over SSH (read-only).
   envman compare FILE1 FILE2 [FILE3 ...]
       Presence matrix of variables across env files.
+  envman scan [--file .env.example]
+      Detect values that look like real secrets in an env file
+      (e.g. committed in a .env.example by accident).
+  envman validate [--env .env] [--config .envman.yaml] [--example .env.example]
+      Check rules from .envman.yaml + "# required" comments in .env.example.
 
 Flags (check):
   --example PATH       reference file           (default .env.example)

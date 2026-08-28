@@ -5,9 +5,9 @@ CLI environment variable sync checker — catch `.env` drift **before** deploy, 
 `envman` validates and compares environment variables across files, docker-compose, and remote VPS
 over SSH. Targeted at self-hosters without an enterprise secret manager.
 
-> **Status:** MVP (Phase 1). See [PRD.md](PRD.md) for the full product spec.
+> **Status:** MVP + Phase 2. See [PRD.md](PRD.md) for the full product spec.
 
-## Features (Phase 1)
+## Features
 
 | Feature | Command |
 |---|---|
@@ -15,6 +15,8 @@ over SSH. Targeted at self-hosters without an enterprise secret manager.
 | Multi-environment compare as a table | `envman compare` |
 | Remote sync check over SSH (read-only) | `envman check --remote user@host:/path/.env` |
 | CI/CD exit code gate | `envman check --ci` |
+| Secret leak scanner (real secrets in example files) | `envman scan` |
+| Type/format validation + `# required` flagging | `envman validate` |
 
 ## Install
 
@@ -56,6 +58,49 @@ Variable        .env.local  .env.staging  .env.production
 DATABASE_URL    OK          OK            MISSING
 JWT_SECRET      OK          EMPTY         OK
 PORT            OK          OK            OK
+```
+
+### Secret leak scanner
+
+```sh
+$ envman scan --file .env.example
+Found 2 possible real secret(s) in .env.example (should be placeholders):
+  VITE_SUPABASE_ANON_KEY = eyJhb…Uts   [JWT (HS256)]
+  DB_PASSWORD = superse…t0r            [key-name heuristic]
+```
+
+Exit code 1 if anything is flagged. Catches secrets that slipped into example files.
+
+### Validation rules (`.envman.yaml`)
+
+```yaml
+# .envman.yaml
+rules:
+  DATABASE_URL:
+    required: true
+    type: url
+  PORT:
+    required: true
+    type: port
+  DEBUG:
+    type: boolean
+  APP_ID:
+    pattern: "^app_[a-z0-9]{16}$"
+```
+
+```sh
+$ envman validate
+REQUIRED: DATABASE_URL: missing required variable
+TYPE:     PORT: expected port 1-65535, got "abc"
+```
+
+Variables marked with `# required` in `.env.example` are enforced too:
+
+```sh
+# .env.example
+# required
+DATABASE_URL=postgres://localhost/db
+API_KEY=your-key      # required
 ```
 
 ## Exit codes

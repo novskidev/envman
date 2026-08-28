@@ -4,3 +4,5 @@ golang.org/x/net v0.23.0/go.mod h1:JKSPwHIX0F2Ff/4dN8Y5aR1QvPpttGXvLwLE7oQb8jQ=
 golang.org/x/sys v0.18.0/go.mod h1:/VUhepiaJMQUp4+oa6e1wPp0pKayQw==
 golang.org/x/term v0.18.0/go.mod h1:71wFjs0WkM8C6XGdqQWlK6of4Z4jZLL1eHGrF7R7Rc=
 golang.org/x/text v0.14.0/go.mod h1:18ZOQIKpY8NJVqYksKHtTdi31je5WLPEdFFr7LLLdHo=
+gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
+gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
