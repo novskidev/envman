@@ -1,4 +1,4 @@
-module github.com/novian/envman
+module github.com/novskidev/envman
 
 go 1.21
 

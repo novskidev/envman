@@ -1,9 +1,9 @@
 #!/bin/sh
 # envman installer - downloads the release binary from GitHub.
-# Usage: curl -fsSL https://raw.githubusercontent.com/novian/envman/main/install.sh | sh
+# Usage: curl -fsSL https://raw.githubusercontent.com/novskidev/envman/main/install.sh | sh
 set -e
 
-REPO="${ENVMAN_REPO:-novian/envman}"
+REPO="${ENVMAN_REPO:-novskidev/envman}"
 VERSION="${1:-latest}"
 OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
 ARCH="$(uname -m)"

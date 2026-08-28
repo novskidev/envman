@@ -19,7 +19,7 @@ over SSH. Targeted at self-hosters without an enterprise secret manager.
 ## Install
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/novian/envman/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/novskidev/envman/main/install.sh | sh
 ```
 
 or build from source (Go >= 1.21):
@@ -76,7 +76,7 @@ Drop this before your deploy step — the deploy only runs if env files are in s
 ```yaml
 - name: Env sync check (local vs server)
   run: |
-    curl -fsSL https://raw.githubusercontent.com/novian/envman/main/install.sh | sh
+    curl -fsSL https://raw.githubusercontent.com/novskidev/envman/main/install.sh | sh
     envman check --remote ${{ secrets.SERVER }}:/srv/app/.env --ci --allow-extra
   env:
     SERVER: deploy@vps.example.com
