@@ -34,8 +34,8 @@ func (s Status) String() string {
 
 // Issue is one variable's verdict when comparing reference vs actual.
 type Issue struct {
-	Key    string
-	Status Status
+	Key    string `json:"key"`
+	Status Status `json:"status"`
 }
 
 // Diff compares reference (.env.example) against actual (.env).

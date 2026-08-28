@@ -36,20 +36,20 @@ func TestComposeEnv(t *testing.T) {
 	if len(svcs) != 2 {
 		t.Fatalf("want 2 services with environment, got %d", len(svcs))
 	}
-	web := svcs[0]
-	if web.Name != "db" { // sorted: db, web, worker
-		t.Fatalf("db sorted first, got %s", web.Name)
+	// sorted: web, worker (db has no environment section, filtered out)
+	if svcs[0].Name != "web" {
+		t.Fatalf("web sorted first, got %s", svcs[0].Name)
 	}
-	if len(svcs[1].Environment) != 3 {
-		t.Fatalf("web: want 3 env entries, got %d: %v", len(svcs[1].Environment), svcs[1].Environment)
+	if len(svcs[0].Environment) != 3 {
+		t.Fatalf("web: want 3 env entries, got %d: %v", len(svcs[0].Environment), svcs[0].Environment)
 	}
-	if keyOfEnvEntry(svcs[1].Environment[0]) != "DEBUG" {
-		t.Errorf("web env[0] key = %q, want DEBUG", svcs[1].Environment[0])
+	if keyOfEnvEntry(svcs[0].Environment[0]) != "DEBUG" {
+		t.Errorf("web env[0] key = %q, want DEBUG", svcs[0].Environment[0])
 	}
-	if keyOfEnvEntry(svcs[1].Environment[2]) != "HOST_TOKEN" {
-		t.Errorf("web passthrough key = %q, want HOST_TOKEN", svcs[1].Environment[2])
+	if keyOfEnvEntry(svcs[0].Environment[2]) != "HOST_TOKEN" {
+		t.Errorf("web passthrough key = %q, want HOST_TOKEN", svcs[0].Environment[2])
 	}
-	if keyOfEnvEntry(svcs[2].Environment[1]) != "QUEUE_NAME" {
-		t.Errorf("worker key = %q, want QUEUE_NAME", svcs[2].Environment[1])
+	if keyOfEnvEntry(svcs[1].Environment[1]) != "QUEUE_NAME" {
+		t.Errorf("worker key = %q, want QUEUE_NAME", svcs[1].Environment[1])
 	}
 }
