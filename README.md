@@ -10,7 +10,11 @@ CLI environment variable sync checker — catch `.env` drift **before** deploy, 
 `envman` validates and compares environment variables across files, docker-compose, and remote VPS
 over SSH. Targeted at self-hosters without an enterprise secret manager.
 
-> **Status:** v0.2.3 — Phase 1 & 2 done. See [PRD.md](PRD.md) for the full product spec.
+> **Status:** v0.3.0 — Phase 1, 2 & 3 (partial). See [PRD.md](PRD.md) for the full product spec.
+
+<p align="center">
+  <img src="docs/demo.svg" alt="envman demo" width="720">
+</p>
 
 ## Features
 

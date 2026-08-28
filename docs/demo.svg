@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="868.0" height="472" viewBox="0 0 868.0 472">
+<rect width="868.0" height="472" rx="8" fill="#0d1117"/>
+<rect x="6" y="6" width="856.0" height="460" rx="6" fill="none" stroke="#30363d" stroke-width="1.5"/>
+<text x="14" y="24" font-family="JetBrains Mono,Menlo,Consolas,monospace" font-size="13" fill="#7ee787">$ envman check</text>
+<text x="14" y="56" font-family="JetBrains Mono,Menlo,Consolas,monospace" font-size="13" fill="#c9d1d9">ref:     .env.example (4 vars)</text>
+<text x="14" y="72" font-family="JetBrains Mono,Menlo,Consolas,monospace" font-size="13" fill="#c9d1d9">compare: .env (3 vars)</text>
+<text x="14" y="104" font-family="JetBrains Mono,Menlo,Consolas,monospace" font-size="13" fill="#c9d1d9">MISSING: API_KEY</text>
+<text x="14" y="120" font-family="JetBrains Mono,Menlo,Consolas,monospace" font-size="13" fill="#c9d1d9">MISSING: LOG_LEVEL</text>
+<text x="14" y="136" font-family="JetBrains Mono,Menlo,Consolas,monospace" font-size="13" fill="#c9d1d9">EXTRA:   DEBUG</text>
+<text x="14" y="152" font-family="JetBrains Mono,Menlo,Consolas,monospace" font-size="13" fill="#c9d1d9">OK: 2  MISSING: 2  EMPTY: 0  EXTRA: 1</text>
+<text x="14" y="184" font-family="JetBrains Mono,Menlo,Consolas,monospace" font-size="13" fill="#7ee787">$ envman check</text>
+<text x="14" y="216" font-family="JetBrains Mono,Menlo,Consolas,monospace" font-size="13" fill="#c9d1d9">ref:     .env.example (4 vars)</text>
+<text x="14" y="232" font-family="JetBrains Mono,Menlo,Consolas,monospace" font-size="13" fill="#c9d1d9">compare: .env (5 vars)</text>
+<text x="14" y="264" font-family="JetBrains Mono,Menlo,Consolas,monospace" font-size="13" fill="#c9d1d9">EXTRA:   DEBUG</text>
+<text x="14" y="280" font-family="JetBrains Mono,Menlo,Consolas,monospace" font-size="13" fill="#c9d1d9">OK: 4  MISSING: 0  EMPTY: 0  EXTRA: 1</text>
+</svg>
