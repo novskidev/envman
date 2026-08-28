@@ -1,11 +1,16 @@
 # envman
 
+[![CI](https://github.com/novskidev/envman/actions/workflows/ci.yml/badge.svg)](https://github.com/novskidev/envman/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/novskidev/envman)](https://github.com/novskidev/envman/releases)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/novskidev/envman)](https://go.dev/dl/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 CLI environment variable sync checker — catch `.env` drift **before** deploy, not after the app crashes.
 
 `envman` validates and compares environment variables across files, docker-compose, and remote VPS
 over SSH. Targeted at self-hosters without an enterprise secret manager.
 
-> **Status:** MVP + Phase 2. See [PRD.md](PRD.md) for the full product spec.
+> **Status:** v0.2.3 — Phase 1 & 2 done. See [PRD.md](PRD.md) for the full product spec.
 
 ## Features
 
@@ -136,9 +141,35 @@ The runner needs an SSH deploy key (via ssh-agent) with read access to the serve
   a hint: `ssh-keyscan -H <host> >> ~/.ssh/known_hosts`. Use `--insecure-ssh` explicitly to opt out.
 - Auth uses keys in `~/.ssh/id_ed25519`, `id_rsa`, `id_ecdsa`, `id_dsa`, then ssh-agent.
 
+## Config reference (`.envman.yaml`)
+
+All rule types: `required`, `type`, `pattern`.
+
+| `type` | accepts |
+|---|---|
+| `url` | `http(s)://…` |
+| `port` | 1–65535 |
+| `boolean` | `true`/`false` |
+| `integer` | whole number |
+| `float` | decimal number |
+| `string` | anything (default) |
+
+```yaml
+rules:
+  DATABASE_URL:
+    required: true
+    type: url
+  PORT:
+    required: true
+    type: port
+  DEBUG:
+    type: boolean
+  APP_ID:
+    pattern: "^app_[a-z0-9]{16}$"
+```
+
 ## Roadmap
 
-- **Phase 2:** type/format validation (`.envman.yaml`), secret leak scanner, required/optional flagging.
 - **Phase 3:** docker-compose aware, `envman push`/`pull` sync (explicit confirm), Markdown/JSON reports + Telegram.
 - **Out of scope:** full secret management (not a Vault/Doppler replacement).
 
@@ -148,6 +179,13 @@ The runner needs an SSH deploy key (via ssh-agent) with read access to the serve
 go test ./...
 go build ./...
 ```
+
+## Contributing
+
+1. Fork + branch.
+2. Keep it stdlib-first and boring — no new deps unless they earn their place.
+3. Every behavior change ships with a test.
+4. PR against `main`. CI (build + test + vet) must pass.
 
 ## License
 
