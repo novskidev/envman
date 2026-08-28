@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-const version = "0.2.3"
+const version = "0.3.0"
 
 func main() {
 	os.Exit(run(os.Args[1:]))
@@ -28,6 +28,8 @@ func run(args []string) int {
 		return cmdScan(args[1:])
 	case "validate":
 		return cmdValidate(args[1:])
+	case "compose":
+		return cmdCompose(args[1:])
 	case "version", "--version", "-v":
 		fmt.Printf("envman %s\n", version)
 		return 0
@@ -48,6 +50,8 @@ func cmdCheck(args []string) int {
 	flExample := fs.String("example", ".env.example", "reference file")
 	flEnv := fs.String("env", ".env", "local env file")
 	flAllowExtra := fs.Bool("allow-extra", false, "EXTRA variables don't affect the exit code")
+	flJSON := fs.Bool("json", false, "emit machine-readable JSON report")
+	flMarkdown := fs.Bool("markdown", false, "emit Markdown report")
 	flTimeout := fs.Duration("timeout", 10*time.Second, "SSH timeout")
 	flInsecure := fs.Bool("insecure-ssh", false, "skip known_hosts verification (NOT recommended)")
 	fs.Parse(args)
@@ -76,15 +80,52 @@ func cmdCheck(args []string) int {
 		}
 	}
 
-	issues := Diff(ref, act)
+	tissues := Diff(ref, act)
 	critical := issues
 	if *flAllowExtra {
 		critical = filterOut(issues, StatusExtra)
 	}
-	RenderIssues(os.Stdout, ref, act, issues, *flCI)
+	switch {
+	case *flJSON:
+		r := buildReport(ref, act, issues)
+		if *flAllowExtra {
+			r.Extra = 0
+			if r.Missing == 0 && r.Empty == 0 {
+				r.ExitCode = 0
+			} else {
+				r.ExitCode = 1
+			}
+		}
+		if err := r.WriteJSON(os.Stdout); err != nil {
+			fmt.Fprintf(os.Stderr, "envman: report: %v\n", err)
+			return 2
+		}
+	case *flMarkdown:
+		r := buildReport(ref, act, issues)
+		r.WriteMarkdown(os.Stdout)
+	default:
+		RenderIssues(os.Stdout, ref, act, issues, *flCI)
+	}
 	if len(critical) > 0 {
 		return 1
 	}
+	return 0
+}
+
+func cmdCompose(args []string) int {
+	fs := flag.NewFlagSet("compose", flag.ExitOnError)
+	flFile := fs.String("file", "docker-compose.yml", "compose file to inspect")
+	fs.Parse(args)
+	if fs.NArg() > 0 {
+		fmt.Fprintf(os.Stderr, "envman compose: unexpected argument %q\n", fs.Arg(0))
+		return 2
+	}
+	svcs, err := ComposeEnv(*flFile)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "envman: %v\n", err)
+		return 2
+	}
+	ComposeReport(os.Stdout, *flFile, svcs)
 	return 0
 }
 
@@ -184,6 +225,8 @@ Usage:
       (e.g. committed in a .env.example by accident).
   envman validate [--env .env] [--config .envman.yaml] [--example .env.example]
       Check rules from .envman.yaml + "# required" comments in .env.example.
+  envman compose [--file docker-compose.yml]
+      List environment variables declared per service in a compose file.
 
 Flags (check):
   --example PATH       reference file           (default .env.example)
@@ -191,6 +234,8 @@ Flags (check):
   --remote TARGET      compare with remote env over SSH
   --ci                 minimal output, exit code is the signal
   --allow-extra        EXTRA vars don't affect the exit code
+  --json               emit machine-readable JSON report
+  --markdown           emit Markdown report
   --timeout DURATION   SSH timeout              (default 10s)
   --insecure-ssh       skip known_hosts check (not recommended)
 

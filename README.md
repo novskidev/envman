@@ -22,6 +22,8 @@ over SSH. Targeted at self-hosters without an enterprise secret manager.
 | CI/CD exit code gate | `envman check --ci` |
 | Secret leak scanner (real secrets in example files) | `envman scan` |
 | Type/format validation + `# required` flagging | `envman validate` |
+| Inspect env vars declared in docker-compose.yml | `envman compose` |
+| JSON / Markdown reports | `envman check --json / --markdown` |
 
 ## Install
 
@@ -170,7 +172,7 @@ rules:
 
 ## Roadmap
 
-- **Phase 3:** docker-compose aware, `envman push`/`pull` sync (explicit confirm), Markdown/JSON reports + Telegram.
+- **Phase 3 (partial):** docker-compose inspect + JSON/Markdown reports done. `envman push`/`pull` sync (explicit confirm) + Telegram notifier pending.
 - **Out of scope:** full secret management (not a Vault/Doppler replacement).
 
 ## Development
