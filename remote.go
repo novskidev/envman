@@ -35,7 +35,9 @@ func ParseRemoteTarget(s, defaultUser string, defaultPort int) (*RemoteTarget, e
 		uname = s[:at]
 		rest = s[at+1:]
 	}
-	colon := strings.Index(rest, ":")
+	// split on the LAST colon: everything before is host[:port], after is path
+	// (paths can contain colons, host:port syntax cannot be ambiguous)
+	colon := strings.LastIndex(rest, ":")
 	if colon < 0 {
 		return nil, fmt.Errorf("target %q: want user@host:/path/to/.env", s)
 	}
