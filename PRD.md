@@ -3,7 +3,7 @@
 **Versi:** 0.1 (Draft) — implementasi: v0.2.0
 **Pemilik Produk:** Novian
 **Tanggal:** 28 Agustus 2026
-**Status:** Draft untuk pengembangan — Fase 1 & 2 selesai diimplementasikan, kode belum ter-push ke main (nunggu push protection resolution)
+**Status:** Fase 1 (MVP) & Fase 2 selesai. Rilis: v0.2.3 (binary Linux/macOS amd64/arm64 via GitHub Releases).
 
 ---
 
