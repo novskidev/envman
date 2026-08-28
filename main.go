@@ -80,7 +80,7 @@ func cmdCheck(args []string) int {
 		}
 	}
 
-	tissues := Diff(ref, act)
+	issues := Diff(ref, act)
 	critical := issues
 	if *flAllowExtra {
 		critical = filterOut(issues, StatusExtra)
